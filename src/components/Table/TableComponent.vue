@@ -27,11 +27,6 @@
 export default {
   name: 'TableComponent',
   props: ['rows', 'columns'],
-//   data () {
-//     return {
-    
-//     }
-//   },
 }
 </script>
 

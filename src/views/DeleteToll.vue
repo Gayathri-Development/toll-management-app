@@ -20,8 +20,5 @@ export default {
             this.flags.invalid = (val != this.tollName);
         }
     },
-    created() {
-        this.flags.invalid = true;
-    }
 }
 </script>

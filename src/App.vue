@@ -1,23 +1,29 @@
 <template>
-  <HomePage/>
+  <div>
+    <Header/>
+    <HomePage/>
+  </div>
 </template>
 
 <script>
-import HomePage from './views/HomePage.vue'
+import HomePage from '@/views/HomePage.vue'
+import Header from '@/views/HeaderTollgate.vue'
 
 export default {
   name: 'App',
   components: {
+    Header,
     HomePage
   }
 }
 </script>
 <style lang="scss">
-/**
+
 * {
   margin: 0;
   padding: 0;
 }
+/**
 button {
   padding: 20px 30px;
   border: none;
@@ -71,5 +77,18 @@ button {
   cursor: pointer;
   border-radius: 4px;
 }
+
+.disabledAccess {
+    cursor: not-allowed;
+}
+
+.required:after {
+    content:" *";
+    color: red;
+}
+
+/* .card:hover {
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+} */
 
 </style>

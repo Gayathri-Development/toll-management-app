@@ -1,12 +1,12 @@
 <template>
     <div>
         <div>
-            <label>Toll Name</label>
+            <label class="required">Toll Name</label>
             <input v-model="model.tollName" class="textBox" type="text" name="tollName" placeholder="Enter toll name">
         </div>
         <!-- Vechicle fare details -->
         <div class="detailsPadding">
-            <label>Vechicle fare details</label>
+            <label class="required">Vechicle fare details</label>
             
             <!-- Vechicle entry - 1 -->
             <div class="flex-container">
@@ -17,10 +17,10 @@
                     </select>
                 </div>
                 <div class="textPadding column">
-                    <input v-model="model.carJeepVan.singleJourney" class="textBox" type="text" name="singleJourney" placeholder="Single Journey">
+                    <input type="number" min="1" v-model="model.carJeepVan.singleJourney" class="textBox" name="singleJourney" placeholder="Single Journey">
                 </div>
                 <div class="textPadding column">
-                    <input v-model="model.carJeepVan.returnJourney" class="textBox" type="text" name="returnJourney" placeholder="Return Journey">
+                    <input v-model="model.carJeepVan.returnJourney" class="textBox" type="number" min="1" name="returnJourney" placeholder="Return Journey">
                 </div>
             </div>
 
@@ -33,10 +33,10 @@
                     </select>
                 </div>
                 <div class="textPadding column">
-                    <input v-model="model.lcv.singleJourney" class="textBox" type="text" name="singleJourney" placeholder="Single Journey">
+                    <input v-model="model.lcv.singleJourney" class="textBox" type="number" min="1" name="singleJourney" placeholder="Single Journey">
                 </div>
                 <div class="textPadding column">
-                    <input v-model="model.lcv.returnJourney" class="textBox" type="text" name="returnJourney" placeholder="Return Journey">
+                    <input v-model="model.lcv.returnJourney" class="textBox" type="number" min="1" name="returnJourney" placeholder="Return Journey">
                 </div>
             </div>
 
@@ -49,10 +49,10 @@
                     </select>
                 </div>
                 <div class="textPadding column">
-                    <input v-model="model.truckBus.singleJourney" class="textBox" type="text" name="singleJourney" placeholder="Single Journey">
+                    <input v-model="model.truckBus.singleJourney" class="textBox" type="number" min="1" name="singleJourney" placeholder="Single Journey">
                 </div>
                 <div class="textPadding column">
-                    <input v-model="model.truckBus.returnJourney" class="textBox" type="text" name="returnJourney" placeholder="Return Journey">
+                    <input v-model="model.truckBus.returnJourney" class="textBox" type="number" min="1" name="returnJourney" placeholder="Return Journey">
                 </div>
             </div>
 
@@ -65,10 +65,10 @@
                     </select>
                 </div>
                 <div class="textPadding column">
-                    <input v-model="model.heavyVehicle.singleJourney" class="textBox" type="text" name="singleJourney" placeholder="Single Journey">
+                    <input v-model="model.heavyVehicle.singleJourney" class="textBox" type="number" min="1" name="singleJourney" placeholder="Single Journey">
                 </div>
                 <div class="textPadding column">
-                    <input v-model="model.heavyVehicle.returnJourney" class="textBox" type="text" name="returnJourney" placeholder="Return Journey">
+                    <input v-model="model.heavyVehicle.returnJourney" class="textBox" type="number" min="1" name="returnJourney" placeholder="Return Journey">
                 </div>
             </div>
             
@@ -116,10 +116,42 @@ export default {
         };
     },
     watch: {
-
+        'model.tollName': function(val) {
+            this.fieldValidate();
+        },
+        'model.carJeepVan.singleJourney': function(val) {
+            this.fieldValidate();
+        },
+        'model.carJeepVan.returnJourney': function(val) {
+            this.fieldValidate();
+        },
+        'model.lcv.singleJourney': function(val) {
+            this.fieldValidate();
+        },
+        'model.lcv.returnJourney': function(val) {
+            this.fieldValidate();
+        },
+        'model.truckBus.singleJourney': function(val) {
+            this.fieldValidate();
+        },
+        'model.truckBus.returnJourney': function(val) {
+            this.fieldValidate();
+        },
+        'model.heavyVehicle.singleJourney': function(val) {
+            this.fieldValidate();
+        },
+        'model.heavyVehicle.returnJourney': function(val) {
+            this.fieldValidate();
+        }
     },
     methods: {
-
+        fieldValidate() {
+            if (this.model.tollName && this.model.tollName != '' && this.model.carJeepVan && this.model.carJeepVan.singleJourney && this.model.carJeepVan.singleJourney != '' && this.model.carJeepVan.returnJourney && this.model.carJeepVan.returnJourney != '' && this.model.lcv && this.model.lcv.singleJourney && this.model.lcv.singleJourney != '' && this.model.truckBus && this.model.truckBus.singleJourney && this.model.truckBus.singleJourney != '' && this.model.truckBus.returnJourney && this.model.truckBus.returnJourney != '' && this.model.heavyVehicle && this.model.heavyVehicle.singleJourney && this.model.heavyVehicle.singleJourney != '' && this.model.heavyVehicle.returnJourney && this.model.heavyVehicle.returnJourney != ''){
+                this.flags.invalid = false;
+            } else {
+                this.flags.invalid = true;
+            }
+        }
     }
 }
 </script>
@@ -134,4 +166,5 @@ export default {
 .detailsPadding {
     padding-top: 20px;
 }
+
 </style>

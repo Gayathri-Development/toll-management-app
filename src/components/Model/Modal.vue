@@ -13,8 +13,7 @@
           </div>
           <!-- Modal Content -->
           <slot />
-          <button @click="btnAction" type="button">{{btnTitle}}</button>
-          <!-- :disabled="btnActionInValid"  -->
+          <button :disabled="btnActionInValid" @click="btnAction" type="button">{{btnTitle}}</button>
           <!-- <button @click="close" type="button">Cancel</button> -->
         </div>
       </transition>
@@ -117,6 +116,16 @@ export default {
       color: #fff;
       cursor: pointer;
     }
+    button:disabled,
+    button[disabled]{
+      width: 100%;
+      padding: 10px 30px;
+      border: none;
+      font-size: 16px;
+      background-color: #cccccc;
+      color: #666666;
+      cursor: not-allowed;
+    }
   }
   .modal-inner-sm {
     position: relative;
@@ -156,6 +165,16 @@ export default {
       background-color: #0096FF;
       color: #fff;
       cursor: pointer;
+    }
+    button:disabled,
+    button[disabled]{
+      width: 100%;
+      padding: 10px 30px;
+      border: none;
+      font-size: 16px;
+      background-color: #cccccc;
+      color: #666666;
+      cursor: not-allowed;
     }
   }
 }

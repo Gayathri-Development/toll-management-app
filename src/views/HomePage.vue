@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <h1>Toll Management Application</h1>
-
+  <div class="container">
     <div class="flex-container">
         <div class="toll-title-header">
           <label v-if="isVehicleLogs"><b>Toll entries/Vehicle entries</b></label>
@@ -10,7 +8,7 @@
 
         <div v-if="isVehicleLogs" class="toll-filter-header">
           <div class="dropdown">
-            <i class="fa fa-filter" aria-hidden="true"></i>
+            <i :class="isFilterEnabled ? 'fa fa-filter filtered' : 'fa fa-filter'" aria-hidden="true"></i>
             <div class="dropdown-content">
               <a @click="tollNameFilter()" v-model="tollName" value="">{{"All"}}</a>
               <span v-for="(toll, index) in tolls">
@@ -20,20 +18,19 @@
           </div>
         </div>
 
-        <div class="search-header">
+        <div class="search-header column">
           <div class="search-input">
-              <input v-if="isVehicleLogs" class="search" v-model="vehicleNumberSearch" type="text" 
-                placeholder="Search vehicle">
+              <input v-if="isVehicleLogs" class="search" v-model="vehicleNumberSearch" type="text" placeholder="Search vehicle by Vehicle Number">
 
                 <input v-else-if="!isVehicleLogs" class="search" v-model="tollNameSearch" type="text" 
-                placeholder="Search vehicle"> 
+                placeholder="Search tollgate by Tollgate Name"> 
 
               <i class="fa fa-search"></i>
           </div>
         </div>
         <!-- Add new vehicle entry -->
         <div class="toll-btn-vechicle-header">
-          <Modal id="add-vehicle" modelTitle="Add New Vehicle" modelSize="small" btnTitle="Save" @btnAction="createVehicle($event)" @close="vehicleModalStatus($event)" :modalActive="vehicleModalActive">
+          <Modal id="add-vehicle" modelTitle="Add New Vehicle" modelSize="small" btnTitle="Save" :btnActionInValid="flags.invalid" @btnAction="createVehicle($event)" @close="vehicleModalStatus($event)" :modalActive="vehicleModalActive">
             <div class="modal-content">
               <AddVehicleForm :tolls="tolls" :model="model" :flags="flags" :vehicles="vehiclesFiltered"></AddVehicleForm>
             </div>
@@ -42,7 +39,7 @@
         </div>
         <!-- Add new toll entry -->
         <div class="toll-btn-toll-header">
-          <Modal modelTitle="Add New Toll" btnTitle="Save" @btnAction="createToll($event)" @close="tollModalStatus($event)" :modalActive="tollModalActive">
+          <Modal modelTitle="Add New Toll" btnTitle="Save" @btnAction="createToll($event)" @close="tollModalStatus($event)" :modalActive="tollModalActive" :btnActionInValid="flags.invalid">
             <div class="modal-content">
               <AddTollForm :model="model" :flags="flags"></AddTollForm>
             </div>
@@ -66,52 +63,55 @@
         </div>
     </div> -->
 
-    <!-- Vehicles log -->
-    <TableComponent v-if="isVehicleLogs" :rows="vehiclesFiltered" :columns="vehicleColumn">
-      <template slot="tb-row" slot-scope="props">
-        <span v-if="props.column.key == 'vehicleType'">
-          {{props.row.vehicleType}}
-        </span>
-        <span v-if="props.column.key == 'vehicleNumber'">
-          {{props.row.vehicleNumber}}
-        </span>
-        <span v-if="props.column.key == 'date'">
-          {{props.row.date}}
-        </span>
-        <span v-if="props.column.key == 'tollName'">
-          {{props.row.tollName}}
-        </span>
-        <span v-if="props.column.key == 'tariff'">
-          {{props.row.tariff}}
-        </span>
-      </template>
-    </TableComponent>
+    <div class="card">
+      <!-- Vehicles log -->
+      <TableComponent v-if="isVehicleLogs" :rows="vehiclesFiltered" :columns="vehicleColumn">
+        <template slot="tb-row" slot-scope="props">
+          <span v-if="props.column.key == 'vehicleType'">
+            {{props.row.vehicleType}}
+          </span>
+          <span v-if="props.column.key == 'vehicleNumber'">
+            {{props.row.vehicleNumber}}
+          </span>
+          <span v-if="props.column.key == 'date'">
+            {{props.row.date}}
+          </span>
+          <span v-if="props.column.key == 'tollName'">
+            {{props.row.tollName}}
+          </span>
+          <span v-if="props.column.key == 'tariff'">
+            {{props.row.tariff}}
+          </span>
+        </template>
+      </TableComponent>
 
-    <!-- Tolls log -->
-    <TableComponent v-else-if="!isVehicleLogs" :rows="tollsFiltered" :columns="tollsColumn">
-      <template slot="tb-row" slot-scope="props">
-        <span v-if="props.column.key == 'tollName'">
-          {{props.row.tollName}}
-        </span>
-        <span v-if="props.column.key == 'carJeepVan'">
-          {{props.row.carJeepVan.singleJourney}}/{{props.row.carJeepVan.returnJourney}}
-        </span>
-        <span v-if="props.column.key == 'lcv'">
-          {{props.row.lcv.singleJourney}}/{{props.row.lcv.returnJourney}}
-        </span>
-        <span v-if="props.column.key == 'truckBus'">
-          {{props.row.truckBus.singleJourney}}/{{props.row.truckBus.returnJourney}}
-        </span>
-        <span v-if="props.column.key == 'heavyVehicle'">
-          {{props.row.heavyVehicle.singleJourney}}/{{props.row.heavyVehicle.returnJourney}}
-        </span>
-        <span v-if="props.column.key == 'actions'">
-          <i @click="deleteTollModel(props.row.tollName, props.rowIndex)" class="fa fa-trash danger" aria-hidden="true" title="Remove"></i>
-          <!-- @click="deleteToll(props.rowIndex)" -->
-        </span>
-      </template>
-    </TableComponent>
+      <!-- Tolls log -->
+      <TableComponent v-else-if="!isVehicleLogs" :rows="tollsFiltered" :columns="tollsColumn">
+        <template slot="tb-row" slot-scope="props">
+          <span v-if="props.column.key == 'tollName'">
+            {{props.row.tollName}}
+          </span>
+          <span v-if="props.column.key == 'carJeepVan'">
+            {{props.row.carJeepVan.singleJourney}}/{{props.row.carJeepVan.returnJourney}}
+          </span>
+          <span v-if="props.column.key == 'lcv'">
+            {{props.row.lcv.singleJourney}}/{{props.row.lcv.returnJourney}}
+          </span>
+          <span v-if="props.column.key == 'truckBus'">
+            {{props.row.truckBus.singleJourney}}/{{props.row.truckBus.returnJourney}}
+          </span>
+          <span v-if="props.column.key == 'heavyVehicle'">
+            {{props.row.heavyVehicle.singleJourney}}/{{props.row.heavyVehicle.returnJourney}}
+          </span>
+          <span v-if="props.column.key == 'actions'">
+            <i @click="deleteTollModel(props.row.tollName, props.rowIndex)" class="fa fa-trash fa-lg danger" aria-hidden="true" title="Remove"></i>
+            <!-- @click="deleteToll(props.rowIndex)" -->
+          </span>
+        </template>
+      </TableComponent>
+    </div>
 
+    <!-- Toll delete model -->
     <Modal id="add-vehicle" modelTitle="Delete Toll" modelSize="small" btnTitle="Delete" @btnAction="deleteToll($event)" :btnActionInValid="flags.invalid" @close="deleteTollModalStatus($event)" :modalActive="deleteTollModalActive">
       <div class="modal-content">
         <DeleteTollForm :model="model" :tollName="deleteTollName" :flags="flags"></DeleteTollForm>
@@ -137,32 +137,6 @@ export default {
     AddTollForm,
     DeleteTollForm
   },
-watch: {
-  tollNameSearch: function(val) {
-    // console.log(val);
-    const tolls = JSON.parse(localStorage.getItem('tolls'));
-    if (val != null && val != "") {
-      this.tollsFiltered = tolls.filter(toll => (toll.tollName.toLowerCase().includes(val.toLowerCase())))
-    } else this.tollsFiltered = tolls;
-  },
-  vehicleNumberSearch: function(val) {
-    const vehicles = JSON.parse(localStorage.getItem('vehicles'));
-    if (val != null && val != "") {
-      this.vehiclesFiltered = vehicles.filter(vehicle => (vehicle.vehicleNumber.toLowerCase().includes(val.toLowerCase())))
-    } else this.vehiclesFiltered = vehicles;
-  }
-},
-created() {
-  // this.vehiclesFiltered = this.vehicles;
-  const vehicles = JSON.stringify(this.vehicles);
-  localStorage.setItem('vehicles', vehicles);
-  this.vehiclesFiltered = JSON.parse(localStorage.getItem('vehicles'));
-
-  // Toll Local Storage...
-  const tolls = JSON.stringify(this.tolls);
-  localStorage.setItem('tolls', tolls);
-  this.tollsFiltered = JSON.parse(localStorage.getItem('tolls'));
-},
   data () {
     return {
       isVehicleLogs: true,
@@ -173,6 +147,7 @@ created() {
       tollName: "",
       vehicleNumberSearch: "",
       tollNameSearch: "",
+      isFilterEnabled: false,
       model: {},
       modelVehicle: {
         tollName: null,
@@ -334,6 +309,32 @@ created() {
       ],
     }
   },
+  watch: {
+  tollNameSearch: function(val) {
+    // console.log(val);
+    const tolls = JSON.parse(localStorage.getItem('tolls'));
+    if (val != null && val != "") {
+      this.tollsFiltered = tolls.filter(toll => (toll.tollName.toLowerCase().includes(val.toLowerCase())))
+    } else this.tollsFiltered = tolls;
+  },
+  vehicleNumberSearch: function(val) {
+    const vehicles = JSON.parse(localStorage.getItem('vehicles'));
+    if (val != null && val != "") {
+      this.vehiclesFiltered = vehicles.filter(vehicle => (vehicle.vehicleNumber.toLowerCase().includes(val.toLowerCase())))
+    } else this.vehiclesFiltered = vehicles;
+  }
+},
+created() {
+  // this.vehiclesFiltered = this.vehicles;
+  const vehicles = JSON.stringify(this.vehicles);
+  localStorage.setItem('vehicles', vehicles);
+  this.vehiclesFiltered = JSON.parse(localStorage.getItem('vehicles'));
+
+  // Toll Local Storage...
+  const tolls = JSON.stringify(this.tolls);
+  localStorage.setItem('tolls', tolls);
+  this.tollsFiltered = JSON.parse(localStorage.getItem('tolls'));
+},
 methods: {
   logsToggle() {
     this.isVehicleLogs = !this.isVehicleLogs;
@@ -381,6 +382,7 @@ methods: {
     localStorage.setItem('tolls', tolls);
     this.tollsFiltered = JSON.parse(localStorage.getItem('tolls'));
     // Add new Toll ends...
+    this.isVehicleLogs = false;
     this.modalToll = {}
     this.modalTollCleanUp();
   },
@@ -417,7 +419,7 @@ methods: {
     else if (model.vehicleType === 'truckBus') vehicleType = "Truck/Bus";
     else vehicleType = "Heavy Vehicle";
 
-    const vehicleModel = {vehicleType: vehicleType, vehicleNumber: model.vechicleNumber, date: dateTime, tollName: model.tollName, tariff: model.tariff};
+    const vehicleModel = {vehicleType: vehicleType, vehicleNumber: model.vechicleNumber.toUpperCase(), date: dateTime, tollName: model.tollName, tariff: model.tariffAmount};
     console.log(vehicleModel);
 
     this.vehicles.push(vehicleModel);
@@ -426,6 +428,7 @@ methods: {
     this.vehiclesFiltered = JSON.parse(localStorage.getItem('vehicles'));
     // Add new vehicle ends...
 
+    this.isVehicleLogs = true;
     this.modelVehicle = {};
     this.modelVehicleCleanUp();
   },
@@ -440,9 +443,11 @@ methods: {
     const vehicles = JSON.parse(localStorage.getItem('vehicles'));
     if (tollName != null && tollName != "" && tollName != undefined) {
       this.vehiclesFiltered = vehicles.filter(vehicle => (vehicle.tollName.toLowerCase().includes(tollName.toLowerCase())));
+      this.isFilterEnabled = true;
       this.$forceUpdate();
     } else {
       this.vehiclesFiltered = vehicles;
+      this.isFilterEnabled = false;
       this.$forceUpdate();
     }
   },
@@ -460,10 +465,16 @@ methods: {
 .flex-container {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
 }
 
 .flex-container > div {
   padding-right: 0px;
+}
+
+.column {
+  flex: 15%;
 }
 
 /* Add search inputbox css */ 
@@ -553,6 +564,15 @@ methods: {
 
 .dropdown-content a:hover {background-color: #f1f1f1;}
 
+.dropdown-content a:active {
+  background-color: yellow;
+}
+
+.dropdown-content a::selection {
+  color: red;
+  background: yellow;
+}
+
 .dropdown:hover .dropdown-content {
   display: block;
 }
@@ -565,6 +585,24 @@ methods: {
   color: red;
   cursor: pointer;
   padding-left: 28px;
+}
+
+.filtered {
+  color: red;
+}
+
+.container {
+  padding: 20px 16px;
+}
+
+.card {
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
+  width: 100%;
+}
+
+.card:hover {
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
 }
 
 </style>
