@@ -4,16 +4,17 @@
 
     <div class="flex-container">
         <div class="toll-title-header">
-          <b>Toll entries/Vehicle entries</b>
+          <label v-if="isVehicleLogs"><b>Toll entries/Vehicle entries</b></label>
+          <label v-else-if="!isVehicleLogs"><b>Tollgate List</b></label>
         </div>
 
-        <div class="toll-filter-header">
+        <div v-if="isVehicleLogs" class="toll-filter-header">
           <div class="dropdown">
             <i class="fa fa-filter" aria-hidden="true"></i>
             <div class="dropdown-content">
-              <a @click="tollNameSearch()" v-model="tollName" value="">{{"All"}}</a>
+              <a @click="tollNameFilter()" v-model="tollName" value="">{{"All"}}</a>
               <span v-for="(toll, index) in tolls">
-                <a @click="tollNameSearch(toll.tollName)" v-model="tollName" :value="toll.tollName">{{toll.tollName}}</a>
+                <a @click="tollNameFilter(toll.tollName)" v-model="tollName" :value="toll.tollName">{{toll.tollName}}</a>
               </span>
             </div>
           </div>
@@ -21,21 +22,20 @@
 
         <div class="search-header">
           <div class="search-input">
-              <input class="search" v-model="vehicleNumberSearch" type="text" 
+              <input v-if="isVehicleLogs" class="search" v-model="vehicleNumberSearch" type="text" 
+                placeholder="Search vehicle">
+
+                <input v-else-if="!isVehicleLogs" class="search" v-model="tollNameSearch" type="text" 
                 placeholder="Search vehicle"> 
+
               <i class="fa fa-search"></i>
           </div>
         </div>
         <!-- Add new vehicle entry -->
         <div class="toll-btn-vechicle-header">
-          <!-- <Modal id="add-vehicle" modelTitle="Add New Vehicle" modelSize="small" btnTitle="Save" @btnAction="createVehicle($event)" @close="addVehicleModel" :modalActive="modalActive">
-            <div class="modal-content">
-              <AddVehicleForm :tolls="tolls" :model="model" :flags="flags"></AddVehicleForm>
-            </div>
-          </Modal> -->
           <Modal id="add-vehicle" modelTitle="Add New Vehicle" modelSize="small" btnTitle="Save" @btnAction="createVehicle($event)" @close="vehicleModalStatus($event)" :modalActive="vehicleModalActive">
             <div class="modal-content">
-              <AddVehicleForm :tolls="tolls" :model="model" :flags="flags"></AddVehicleForm>
+              <AddVehicleForm :tolls="tolls" :model="model" :flags="flags" :vehicles="vehiclesFiltered"></AddVehicleForm>
             </div>
           </Modal>
           <button id="add-vehicle" @click="vehicleModel" type="button">Add Vehicle Entry</button>        
@@ -51,7 +51,8 @@
         </div> 
         <!-- View all tolls -->
         <div class="toll-btn-toll-header">
-          <button type="button">View All Tolls</button>
+          <button v-if="isVehicleLogs" @click="logsToggle" type="button">View All Tolls</button>
+          <button v-else-if="!isVehicleLogs" @click="logsToggle" type="button">Back to Vehicle Logs</button>
         </div>
     </div>
 
@@ -65,58 +66,113 @@
         </div>
     </div> -->
 
-    <Table :rows="records" :columns="fields"></Table>
+    <!-- Vehicles log -->
+    <TableComponent v-if="isVehicleLogs" :rows="vehiclesFiltered" :columns="vehicleColumn">
+      <template slot="tb-row" slot-scope="props">
+        <span v-if="props.column.key == 'vehicleType'">
+          {{props.row.vehicleType}}
+        </span>
+        <span v-if="props.column.key == 'vehicleNumber'">
+          {{props.row.vehicleNumber}}
+        </span>
+        <span v-if="props.column.key == 'date'">
+          {{props.row.date}}
+        </span>
+        <span v-if="props.column.key == 'tollName'">
+          {{props.row.tollName}}
+        </span>
+        <span v-if="props.column.key == 'tariff'">
+          {{props.row.tariff}}
+        </span>
+      </template>
+    </TableComponent>
 
-    <!-- <Table :rows="tolls" :columns="fields"></Table> -->
+    <!-- Tolls log -->
+    <TableComponent v-else-if="!isVehicleLogs" :rows="tollsFiltered" :columns="tollsColumn">
+      <template slot="tb-row" slot-scope="props">
+        <span v-if="props.column.key == 'tollName'">
+          {{props.row.tollName}}
+        </span>
+        <span v-if="props.column.key == 'carJeepVan'">
+          {{props.row.carJeepVan.singleJourney}}/{{props.row.carJeepVan.returnJourney}}
+        </span>
+        <span v-if="props.column.key == 'lcv'">
+          {{props.row.lcv.singleJourney}}/{{props.row.lcv.returnJourney}}
+        </span>
+        <span v-if="props.column.key == 'truckBus'">
+          {{props.row.truckBus.singleJourney}}/{{props.row.truckBus.returnJourney}}
+        </span>
+        <span v-if="props.column.key == 'heavyVehicle'">
+          {{props.row.heavyVehicle.singleJourney}}/{{props.row.heavyVehicle.returnJourney}}
+        </span>
+        <span v-if="props.column.key == 'actions'">
+          <i @click="deleteTollModel(props.row.tollName, props.rowIndex)" class="fa fa-trash danger" aria-hidden="true" title="Remove"></i>
+          <!-- @click="deleteToll(props.rowIndex)" -->
+        </span>
+      </template>
+    </TableComponent>
+
+    <Modal id="add-vehicle" modelTitle="Delete Toll" modelSize="small" btnTitle="Delete" @btnAction="deleteToll($event)" :btnActionInValid="flags.invalid" @close="deleteTollModalStatus($event)" :modalActive="deleteTollModalActive">
+      <div class="modal-content">
+        <DeleteTollForm :model="model" :tollName="deleteTollName" :flags="flags"></DeleteTollForm>
+      </div>
+    </Modal>
 
   </div>
 </template>
 
 <script>
-import Table from '@/components/Table/Table.vue'
+import TableComponent from '@/components/Table/TableComponent.vue'
 import Modal from "@/components/Model/Modal.vue";
 import AddVehicleForm from "@/views/AddNewVehicle.vue";
 import AddTollForm from "@/views/AddNewToll.vue";
+import DeleteTollForm from "@/views/DeleteToll.vue";
 import { ref } from "vue";
 export default {
   name: 'HomePage',
   components: {
-    Table,
+    TableComponent,
     Modal,
     AddVehicleForm,
-    AddTollForm
+    AddTollForm,
+    DeleteTollForm
   },
-  // setup() {
-  //   // addVehicleModel
-  //   const modalActive = ref(false);
-  //   const addVehicleModel = () => {
-  //     modalActive.value = !modalActive.value;
-  //   };
-  //   return { modalActive, addVehicleModel };
-  // },
 watch: {
-  vehicles: function(val) {
-    console.log(val);
+  tollNameSearch: function(val) {
+    // console.log(val);
+    const tolls = JSON.parse(localStorage.getItem('tolls'));
+    if (val != null && val != "") {
+      this.tollsFiltered = tolls.filter(toll => (toll.tollName.toLowerCase().includes(val.toLowerCase())))
+    } else this.tollsFiltered = tolls;
   },
   vehicleNumberSearch: function(val) {
     const vehicles = JSON.parse(localStorage.getItem('vehicles'));
     if (val != null && val != "") {
-      this.records = vehicles.filter(vehicle => (vehicle.vehicleNumber.toLowerCase().includes(val.toLowerCase())))
-    } else this.records = vehicles;
+      this.vehiclesFiltered = vehicles.filter(vehicle => (vehicle.vehicleNumber.toLowerCase().includes(val.toLowerCase())))
+    } else this.vehiclesFiltered = vehicles;
   }
 },
 created() {
-  // this.records = this.vehicles;
+  // this.vehiclesFiltered = this.vehicles;
   const vehicles = JSON.stringify(this.vehicles);
   localStorage.setItem('vehicles', vehicles);
-  this.records = JSON.parse(localStorage.getItem('vehicles'));
+  this.vehiclesFiltered = JSON.parse(localStorage.getItem('vehicles'));
+
+  // Toll Local Storage...
+  const tolls = JSON.stringify(this.tolls);
+  localStorage.setItem('tolls', tolls);
+  this.tollsFiltered = JSON.parse(localStorage.getItem('tolls'));
 },
   data () {
     return {
+      isVehicleLogs: true,
       vehicleModalActive: false,
       tollModalActive: false,
+      deleteTollModalActive: false,
+      deleteTollName: "",
       tollName: "",
       vehicleNumberSearch: "",
+      tollNameSearch: "",
       model: {},
       modelVehicle: {
         tollName: null,
@@ -137,26 +193,26 @@ created() {
         }
       },
       flags: {
-        invalid: false
+        invalid: true
       },
       tolls: [
         {
           "tollName": "Kappalur",
           "carJeepVan": {
-            "singleJourney": "50",
-            "returnJourney": "60"
+            "singleJourney": "150",
+            "returnJourney": "120"
           },
           "lcv": {
             "singleJourney": "50",
-            "returnJourney": "60"
+            "returnJourney": "40"
           },
           "truckBus": {
-            "singleJourney": "50",
-            "returnJourney": "60"
+            "singleJourney": "30",
+            "returnJourney": "40"
           },
           "heavyVehicle": {
-            "singleJourney": "50",
-            "returnJourney": "60"
+            "singleJourney": "150",
+            "returnJourney": "260"
           },
         },
         {
@@ -198,6 +254,32 @@ created() {
           },
         },
       ],
+      tollsColumn: [
+        {
+          key: 'tollName',
+          label: 'Toll Name'
+        },
+        {
+          key: 'carJeepVan',
+          label: 'Car/Jeep/Van'
+        },
+        {
+          key: 'lcv',
+          label: 'LCV'
+        },
+        {
+          key: 'truckBus',
+          label: 'Truck Bus'
+        },
+        {
+          key: 'heavyVehicle',
+          label: 'Heavy Vehicle'
+        },
+        {
+          key: 'actions',
+          label: 'Actions'
+        },
+      ],
       vehicles: [
         {
             "vehicleType": "Car/Jeep/Van",
@@ -228,7 +310,7 @@ created() {
             "tariff": "60"
         },
       ],
-      fields: [
+      vehicleColumn: [
             {
                 key: 'vehicleType',
                 label: 'Vehicle Type'
@@ -253,6 +335,17 @@ created() {
     }
   },
 methods: {
+  logsToggle() {
+    this.isVehicleLogs = !this.isVehicleLogs;
+  },
+  deleteToll(tIndex) {
+    console.log(tIndex);
+    this.tolls.splice(tIndex, 1);
+    // Update tolls on localstorage
+    const tolls = JSON.stringify(this.tolls);
+    localStorage.setItem('tolls', tolls);
+    this.tollsFiltered = JSON.parse(localStorage.getItem('tolls'));
+  },
   vehicleModalStatus(status) {
     console.log(status);
     this.vehicleModalActive = status;
@@ -260,6 +353,16 @@ methods: {
   vehicleModel() {
     this.model = this.modelVehicle;
     this.vehicleModalActive = true;
+  },
+  deleteTollModel(tollName, tollIndex) {
+    console.log(tollIndex);
+    this.deleteTollName = tollName;
+    this.model = tollIndex;
+    this.deleteTollModalActive = true;
+  },
+  deleteTollModalStatus(status) {
+    console.log(status);
+    this.deleteTollModalActive = status;
   },
   tollModalStatus(status) {
     console.log(status);
@@ -272,6 +375,12 @@ methods: {
   createToll(model){
     console.log("createToll fn");
     console.log(model);
+    // Add new Toll...
+    this.tolls.push(model);
+    const tolls = JSON.stringify(this.tolls);
+    localStorage.setItem('tolls', tolls);
+    this.tollsFiltered = JSON.parse(localStorage.getItem('tolls'));
+    // Add new Toll ends...
     this.modalToll = {}
     this.modalTollCleanUp();
   },
@@ -302,13 +411,19 @@ methods: {
     const dateTime = currentdate.getDate() + "/" + (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + ", "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
     console.log(dateTime);
 
-    const vehicleModel = {vehicleType: model.vehicleType, vehicleNumber: model.vechicleNumber, date: dateTime, tollName: model.tollName, tariff: model.tariff};
+    let vehicleType;
+    if (model.vehicleType === 'carJeepVan') vehicleType = "Car/Jeep/Van";
+    else if (model.vehicleType === 'lcv') vehicleType = "LCV";
+    else if (model.vehicleType === 'truckBus') vehicleType = "Truck/Bus";
+    else vehicleType = "Heavy Vehicle";
+
+    const vehicleModel = {vehicleType: vehicleType, vehicleNumber: model.vechicleNumber, date: dateTime, tollName: model.tollName, tariff: model.tariff};
     console.log(vehicleModel);
 
     this.vehicles.push(vehicleModel);
-    let vehicles = JSON.stringify(this.vehicles);
+    const vehicles = JSON.stringify(this.vehicles);
     localStorage.setItem('vehicles', vehicles);
-    this.records = JSON.parse(localStorage.getItem('vehicles'));
+    this.vehiclesFiltered = JSON.parse(localStorage.getItem('vehicles'));
     // Add new vehicle ends...
 
     this.modelVehicle = {};
@@ -320,14 +435,14 @@ methods: {
     this.model = this.modelVehicle;
     this.$forceUpdate();
   },
-  tollNameSearch(tollName) {
+  tollNameFilter(tollName) {
     // console.log(tollName);
     const vehicles = JSON.parse(localStorage.getItem('vehicles'));
     if (tollName != null && tollName != "" && tollName != undefined) {
-      this.records = vehicles.filter(vehicle => (vehicle.tollName.toLowerCase().includes(tollName.toLowerCase())));
+      this.vehiclesFiltered = vehicles.filter(vehicle => (vehicle.tollName.toLowerCase().includes(tollName.toLowerCase())));
       this.$forceUpdate();
     } else {
-      this.records = vehicles;
+      this.vehiclesFiltered = vehicles;
       this.$forceUpdate();
     }
   },
@@ -446,5 +561,10 @@ methods: {
   background-color: #3e8e41;
 }
 
+.danger {
+  color: red;
+  cursor: pointer;
+  padding-left: 28px;
+}
 
 </style>

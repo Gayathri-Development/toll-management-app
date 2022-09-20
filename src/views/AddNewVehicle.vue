@@ -10,7 +10,7 @@
 
         <div class="paddingTop">
             <label>Select Vechicle Type</label>
-            <select v-model="model.vehicleType" class="textBox">
+            <select @change="tariffCalculation()" v-model="model.vehicleType" class="textBox">
                 <option :value='null'>Select vehicle type</option>
                 <option v-for="(vehicle, index) in vehicleTypes" :value="vehicle.value">{{vehicle.text}}</option>
             </select>
@@ -18,7 +18,7 @@
 
         <div class="paddingTop">
             <label>Vechicle Number</label>
-            <input v-model="model.vechicleNumber" class="textBox" type="text" name="vechicleNumber" placeholder="Enter Vechicle Number">
+            <input v-on:change='tariffCalculation()' v-model="model.vechicleNumber" class="textBox" type="text" name="vechicleNumber" placeholder="Enter Vechicle Number">
         </div>
 
         <div class="paddingTop">
@@ -53,7 +53,7 @@ export default {
             ]
         }
     },
-    props: ['model', 'flags', 'tolls'],
+    props: ['model', 'flags', 'tolls', 'vehicles'],
     created() {
         this.model.tollName = null;
         this.model.vehicleType = null;
@@ -62,7 +62,35 @@ export default {
 
     },
     methods: {
+        tariffCalculation() {
+            console.log("Tariff Calculation")
+            // Discounted Toll Rate...
+            if (this.vehicles && this.vehicles.length != 0) this.vehicles.forEach((vehicle) => {
+                if (vehicle.artifactType.vehicleNumber.toLowerCase() === this.model.vechicleNumber.toLowerCase() && vehicle.artifactType.tollName.toLowerCase() === model.tollName.toLowerCase()){
+                    
+                    // New Date Time...
+                    const currentdate = new Date(); 
+                    const newDateTime = currentdate.getFullYear() + "/" + (currentdate.getMonth()+1)  + "/" + currentdate.getDate() + ", "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
+                    
+                    // Previous Date Time...
+                    const prevDateTime = vehicle.date.split(",")[0].split("/").reverse().join("/") + ',' + vehicle.date.split(",")[1].split("/").reverse().join("/");
+                    console.log(prevDateTime);
+                    const diffInMilliseconds = Math.abs(new Date(prevDateTime) - new Date(newDateTime));
 
+                    // Date/Time Difference...
+                    const diffInMinutes = Math.floor((diffInMilliseconds / (1000 * 60)) % 60);
+                    console.log(diffInMinutes);
+
+                    if (diffInMinutes < 60){
+                        model.tariffAmount = '';
+                    }
+                   
+
+                }
+                    
+            });
+
+        }
     }
 }
 </script>

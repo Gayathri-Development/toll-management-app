@@ -3,22 +3,17 @@
     <table>
       <thead>
         <tr>
-          <th
-            v-for="(column, index) in columns"
-            v-bind:key="index">
-            {{column.label}}
+          <th v-for="(column, labelIndex) in columns" :key="labelIndex">
+            {{ column.label }}
           </th>
         </tr>
       </thead>
       <tbody>
-        <tr
-          v-for="(row, index) in rows"
-          v-bind:key="index">
-          <td
-            v-for="(rowItem, itemIndex) in row"
-            v-bind:key="itemIndex">
-            {{rowItem}}
-          </td>
+        <tr v-for="(item, itemIndex) in rows" :key="itemIndex">
+            <td v-for="(column, labelIndex) in columns" :key="labelIndex">
+                <!-- {{ item[column.key] }} -->
+                <slot name="tb-row" :row="item" :rowIndex="itemIndex" :column="column"></slot> 
+            </td>
         </tr>
         <span v-if="rows.length == 0">
           {{"No Records Found"}}
@@ -30,7 +25,7 @@
 
 <script>
 export default {
-  name: 'Table',
+  name: 'TableComponent',
   props: ['rows', 'columns'],
 //   data () {
 //     return {

@@ -14,6 +14,7 @@
           <!-- Modal Content -->
           <slot />
           <button @click="btnAction" type="button">{{btnTitle}}</button>
+          <!-- :disabled="btnActionInValid"  -->
           <!-- <button @click="close" type="button">Cancel</button> -->
         </div>
       </transition>
@@ -23,7 +24,7 @@
 
 <script>
 export default {
-  props: ["modalActive", "modelTitle", "btnTitle", "modelSize"],
+  props: ["modalActive", "modelTitle", "btnTitle", "modelSize", 'btnActionInValid'],
   setup(props, { emit }) {
     const close = () => {
       emit("close");
