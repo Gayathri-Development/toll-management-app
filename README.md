@@ -1,4 +1,12 @@
-# toll-management-app
+# Tollgate Management Application
+
+## Prerequisite
+```
+Node version - v14.17.3
+NPM version - 6.14.13
+```
+
+> Recommended Browser - Google Chrome
 
 ## Project setup
 ```
