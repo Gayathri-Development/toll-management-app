@@ -114,14 +114,17 @@ export default {
                 console.log(recentDate);
                 const recentTime = currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
                 console.log(recentTime.trim());
+                const recentDateTime = recentDate.split("/").reverse().join("/") + ', ' + recentTime;
+                console.log("recentDateTime => " + recentDateTime);
 
                 // vehicle history...
                 let vehicleHistory = [];
                 this.vehicles.forEach((vehicle) => {
                     const existingDate = vehicle.date.split(",")[0];
                     const existingTime = vehicle.date.split(",")[1].trim();
+                    const existingDateTime = existingDate.split("/").reverse().join("/") + ', ' + existingTime;
                     if (vehicle.vehicleNumber.toLowerCase() === this.model.vechicleNumber.toLowerCase() && vehicle.tollName.toLowerCase() === this.model.tollName.toLowerCase() && existingDate === recentDate){
-                        vehicleHistory.push({date: existingDate, time: existingTime, vehicleNumber: vehicle.vehicleNumber, tollgateName: vehicle.tollName});
+                        vehicleHistory.push({dateTime: existingDateTime, vehicleNumber: vehicle.vehicleNumber, tollgateName: vehicle.tollName});
                     }   
                 });
                 console.table(vehicleHistory);
@@ -131,7 +134,7 @@ export default {
                 */
                 const totalTrips = vehicleHistory.length;
                 if (totalTrips == 0){
-                    console.log("Vehicle not exist -> " + singleJourneyRate);
+                    console.log("Vehicle not exist in today's date -> " + singleJourneyRate);
                     this.model.tariffAmount = singleJourneyRate;
                     this.$forceUpdate();
                     this.fieldValidate();
@@ -141,11 +144,14 @@ export default {
                     this.$forceUpdate();
                     this.fieldValidate();
                 } else {
-                    // Compare the time...
-                    console.log(vehicleHistory[totalTrips - 1].time);
-                    const hours = (vehicleHistory[totalTrips - 1].time.split(":")[0]) - (recentTime.split(":")[0]);
-                    const minutes = (vehicleHistory[totalTrips - 1].time.split(":")[1]) - (recentTime.split(":")[1]);
-                    if (hours == 0 && minutes < 60) {
+                    // Calculate Time difference...
+                    const diffInMilliseconds = Math.abs(new Date(recentDateTime) - new Date(vehicleHistory[totalTrips - 1].dateTime));
+
+                    // Date/Time Difference...
+                    const diffInMinutes = Math.floor((diffInMilliseconds / (1000 * 60)) % 60);
+                    console.log("Time Difference in Minutes => " + diffInMinutes);
+
+                    if (diffInMinutes < 60) {
                         console.log("Within 1 hrs -> " + returnJourneyRate);
                         this.model.tariffAmount = returnJourneyRate;
                         this.$forceUpdate();
@@ -164,7 +170,6 @@ export default {
                 this.fieldValidate();
             }
             
-
         }
     }
 }
