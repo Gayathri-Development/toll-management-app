@@ -30,7 +30,7 @@
         </div>
         <!-- Add new vehicle entry -->
         <div class="toll-btn-vechicle-header">
-          <Modal id="add-vehicle" modelTitle="Add New Vehicle" modelSize="small" btnTitle="Save" :btnActionInValid="flags.invalid" @btnAction="createVehicle($event)" @close="vehicleModalStatus($event)" :modalActive="vehicleModalActive">
+          <Modal id="add-vehicle" modelTitle="Add New Vehicle" modelSize="small" btnTitle="Add Vehicle Entry" :btnActionInValid="flags.invalid" @btnAction="createVehicle($event)" @close="vehicleModalStatus($event)" :modalActive="vehicleModalActive">
             <div class="modal-content">
               <AddVehicleForm :tolls="tolls" :model="model" :flags="flags" :vehicles="vehiclesFiltered"></AddVehicleForm>
             </div>
@@ -39,7 +39,7 @@
         </div>
         <!-- Add new toll entry -->
         <div class="toll-btn-toll-header">
-          <Modal modelTitle="Add New Toll" btnTitle="Save" @btnAction="createToll($event)" @close="tollModalStatus($event)" :modalActive="tollModalActive" :btnActionInValid="flags.invalid">
+          <Modal modelTitle="Add New Toll" btnTitle="Add Toll Details" @btnAction="createToll($event)" @close="tollModalStatus($event)" :modalActive="tollModalActive" :btnActionInValid="flags.invalid">
             <div class="modal-content">
               <AddTollForm :model="model" :flags="flags" :tolls="tolls"></AddTollForm>
             </div>
@@ -52,17 +52,6 @@
           <button v-else-if="!isVehicleLogs" @click="logsToggle" type="button">Back to Vehicle Logs</button>
         </div>
     </div>
-
-    <!-- <div class="search-header">
-        <span>Toll entries/Vehicle entries</span>
-        <div class="search-input">
-            <input class="search" type="text" 
-              placeholder="Search vehicle"> 
-            <i class="fa fa-search"></i>
-            <button type="submit">Login</button> 
-        </div>
-    </div> -->
-
     <div class="card">
       <!-- Vehicles log -->
       <TableComponent v-if="isVehicleLogs" :rows="vehiclesFiltered" :columns="vehicleColumn" resourceType="Vehicles">
@@ -126,7 +115,6 @@ import Modal from "@/components/Model/Modal.vue";
 import AddVehicleForm from "@/views/AddNewVehicle.vue";
 import AddTollForm from "@/views/AddNewToll.vue";
 import DeleteTollForm from "@/views/DeleteToll.vue";
-import { ref } from "vue";
 export default {
   name: 'HomePage',
   components: {
@@ -266,23 +254,16 @@ export default {
             "vehicleType": "LCV",
             "vehicleNumber": "TN78Q6844",
             "date": "9/9/2022, 16:48:43",
-            "tollName": "Kappalur",
-            "tariff": "60"
+            "tollName": "Krishnagri",
+            "tariff": "200"
         },
         {
             "vehicleType": "Truck/Bus",
             "vehicleNumber": "TN24Q6844",
-            "date": "20/9/2022, 15:48:43",
+            "date": "20/9/2022, 11:20:43",
             "tollName": "Kappalur",
-            "tariff": "60"
-        },
-        {
-            "vehicleType": "Truck/Bus",
-            "vehicleNumber": "TN24Q6844",
-            "date": "20/9/2022, 17:40:00",
-            "tollName": "Kappalur",
-            "tariff": "60"
-        },
+            "tariff": "40"
+        }
       ],
       vehicleColumn: [
             {
@@ -386,7 +367,7 @@ methods: {
     localStorage.setItem('tolls', tolls);
     this.tollsFiltered = JSON.parse(localStorage.getItem('tolls'));
     // Add new Toll ends...
-    
+
     this.isVehicleLogs = false;
     this.modalToll = {}
     this.modalTollCleanUp();

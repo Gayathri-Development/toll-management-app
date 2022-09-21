@@ -149,11 +149,6 @@ export default {
         }
     },
     methods: {
-        // setTollName(val){
-        //     const tollName = val.toLowerCase();
-        //     this.model.tollName = tollName[0].toUpperCase() + tollName.slice(1, tollName.length);
-        //     this.$forceUpdate();
-        // },
         checkTollExist(val) {
             if (this.tolls && this.tolls.length != 0) {
                 if (this.tolls.filter(e => e.tollName.trim().toLowerCase() === val.trim().toLowerCase()).length > 0) {

@@ -24,18 +24,11 @@
 <script>
 export default {
   props: ["modalActive", "modelTitle", "btnTitle", "modelSize", 'btnActionInValid'],
-  setup(props, { emit }) {
-    const close = () => {
-      emit("close");
-    };
-    return { close };
-  },
   methods: {
     close() {
       this.$emit('close', !this.modalActive);
     },
     btnAction() {
-      // console.log("btn action clicked!");
       // console.log(this);
       // console.log(this.$options.parent.model);
       this.$emit('btnAction', this.$options.parent.model);
