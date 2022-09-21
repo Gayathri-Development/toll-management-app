@@ -2,8 +2,8 @@
   <div class="container">
     <div class="flex-container">
         <div class="toll-title-header">
-          <label v-if="isVehicleLogs"><b>Toll entries/Vehicle entries</b></label>
-          <label v-else-if="!isVehicleLogs"><b>Tollgate List</b></label>
+          <label class="title-label" v-if="isVehicleLogs"><b>Vehicles Entry</b></label>
+          <label class="title-label" v-else-if="!isVehicleLogs"><b>Tollgate List</b></label>
         </div>
 
         <div v-if="isVehicleLogs" class="toll-filter-header">
@@ -41,7 +41,7 @@
         <div class="toll-btn-toll-header">
           <Modal modelTitle="Add New Toll" btnTitle="Save" @btnAction="createToll($event)" @close="tollModalStatus($event)" :modalActive="tollModalActive" :btnActionInValid="flags.invalid">
             <div class="modal-content">
-              <AddTollForm :model="model" :flags="flags"></AddTollForm>
+              <AddTollForm :model="model" :flags="flags" :tolls="tolls"></AddTollForm>
             </div>
           </Modal>
           <button @click="tollModal" type="button">Add New Toll</button>
@@ -65,7 +65,7 @@
 
     <div class="card">
       <!-- Vehicles log -->
-      <TableComponent v-if="isVehicleLogs" :rows="vehiclesFiltered" :columns="vehicleColumn">
+      <TableComponent v-if="isVehicleLogs" :rows="vehiclesFiltered" :columns="vehicleColumn" resourceType="Vehicles">
         <template slot="tb-row" slot-scope="props">
           <span v-if="props.column.key == 'vehicleType'">
             {{props.row.vehicleType}}
@@ -86,7 +86,7 @@
       </TableComponent>
 
       <!-- Tolls log -->
-      <TableComponent v-else-if="!isVehicleLogs" :rows="tollsFiltered" :columns="tollsColumn">
+      <TableComponent v-else-if="!isVehicleLogs" :rows="tollsFiltered" :columns="tollsColumn" resourceType="Tolls">
         <template slot="tb-row" slot-scope="props">
           <span v-if="props.column.key == 'tollName'">
             {{props.row.tollName}}
@@ -117,7 +117,6 @@
         <DeleteTollForm :model="model" :tollName="deleteTollName" :flags="flags"></DeleteTollForm>
       </div>
     </Modal>
-
   </div>
 </template>
 
@@ -175,57 +174,57 @@ export default {
           "tollName": "Kappalur",
           "carJeepVan": {
             "singleJourney": "150",
-            "returnJourney": "120"
+            "returnJourney": "100"
           },
           "lcv": {
             "singleJourney": "50",
-            "returnJourney": "40"
+            "returnJourney": "30"
           },
           "truckBus": {
-            "singleJourney": "30",
+            "singleJourney": "60",
             "returnJourney": "40"
           },
           "heavyVehicle": {
-            "singleJourney": "150",
+            "singleJourney": "350",
             "returnJourney": "260"
           },
         },
         {
           "tollName": "Chengalpattu",
           "carJeepVan": {
-            "singleJourney": "50",
+            "singleJourney": "150",
             "returnJourney": "60"
           },
           "lcv": {
-            "singleJourney": "50",
-            "returnJourney": "60"
+            "singleJourney": "70",
+            "returnJourney": "45"
           },
           "truckBus": {
-            "singleJourney": "50",
+            "singleJourney": "150",
             "returnJourney": "60"
           },
           "heavyVehicle": {
-            "singleJourney": "50",
-            "returnJourney": "60"
+            "singleJourney": "150",
+            "returnJourney": "90"
           },
         },
         {
           "tollName": "Krishnagri",
           "carJeepVan": {
-            "singleJourney": "50",
-            "returnJourney": "60"
+            "singleJourney": "90",
+            "returnJourney": "75"
           },
           "lcv": {
-            "singleJourney": "50",
-            "returnJourney": "60"
+            "singleJourney": "200",
+            "returnJourney": "120"
           },
           "truckBus": {
-            "singleJourney": "50",
-            "returnJourney": "60"
+            "singleJourney": "330",
+            "returnJourney": "200"
           },
           "heavyVehicle": {
-            "singleJourney": "50",
-            "returnJourney": "60"
+            "singleJourney": "70",
+            "returnJourney": "50"
           },
         },
       ],
@@ -257,30 +256,30 @@ export default {
       ],
       vehicles: [
         {
-            "vehicleType": "Car/Jeep/Van",
+            "vehicleType": "Truck/Bus",
             "vehicleNumber": "TN24Q6844",
-            "date": "09/09/2022, 16:48:43",
-            "tollName": "Chengalpattu",
+            "date": "20/9/2022, 10:28:13",
+            "tollName": "Kappalur",
             "tariff": "60"
         },
         {
             "vehicleType": "LCV",
             "vehicleNumber": "TN78Q6844",
-            "date": "09/09/2022, 16:48:43",
+            "date": "9/9/2022, 16:48:43",
             "tollName": "Kappalur",
             "tariff": "60"
         },
         {
             "vehicleType": "Truck/Bus",
             "vehicleNumber": "TN24Q6844",
-            "date": "09/09/2022, 16:48:43",
+            "date": "20/9/2022, 15:48:43",
             "tollName": "Kappalur",
             "tariff": "60"
         },
         {
-            "vehicleType": "Heavy vehicle",
+            "vehicleType": "Truck/Bus",
             "vehicleNumber": "TN24Q6844",
-            "date": "09/09/2022, 16:48:43",
+            "date": "20/9/2022, 17:40:00",
             "tollName": "Kappalur",
             "tariff": "60"
         },
@@ -605,4 +604,11 @@ methods: {
   box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
 }
 
+.title-label:after {
+  content: "|";
+  padding-left: 20px;
+  padding-right: 0px;
+  color: gray;
+  font-size: 20px;
+}
 </style>

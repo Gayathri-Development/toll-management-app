@@ -18,12 +18,13 @@
 
         <div class="paddingTop">
             <label class="required">Vechicle Number</label>
-            <input v-on:change='tariffCalculation()' v-model="model.vechicleNumber" class="textBox" type="text" name="vechicleNumber" placeholder="Enter Vechicle Number">
+            <!-- v-on:change='setVechicleNum(model.vechicleNumber); fieldValidate(); tariffCalculation()' -->
+            <input @change="fieldValidate()" v-on:click="fieldValidate()" v-on:focus="tariffCalculation(); fieldValidate()" @focusout="fieldValidate(); tariffCalculation()" v-model="model.vechicleNumber" class="textBox" type="text" name="vechicleNumber" placeholder="Enter Vechicle Number">
         </div>
 
         <div class="paddingTop">
             <label class="required">Tariff</label>
-            <input v-model="model.tariffAmount" disabled class="textBox disabledAccess" type="text" name="tariffAmount" placeholder="Tariff Amount">
+            <input v-on:change="fieldValidate()" v-model="model.tariffAmount" disabled class="textBox disabledAccess" type="text" name="tariffAmount" placeholder="Tariff Amount">
         </div>
 
     </div>
@@ -63,15 +64,17 @@ export default {
             this.fieldValidate();
         },
         'model.vehicleType': function(val) {
+            this.tariffCalculation();
             this.fieldValidate();
         },
         'model.vechicleNumber': function(val) {
+            this.tariffCalculation();
             this.fieldValidate();
         }
     },
     methods: {
         fieldValidate() {
-            if (this.model.tollName && this.model.tollName != '' && this.model.vehicleType && this.model.vehicleType != '' && this.model.vechicleNumber && this.model.vechicleNumber != '' && this.model.tariffAmount && this.model.tariffAmount != ''){
+            if (this.model.tollName && this.model.tollName != '' && this.model.vehicleType && this.model.vehicleType != '' && this.model.vechicleNumber && this.model.vechicleNumber != ''){
                 this.flags.invalid = false;
             }else {
                 this.flags.invalid = true;
@@ -79,32 +82,76 @@ export default {
         },
         tariffCalculation() {
             console.log("Tariff Calculation");
-            this.model.tariffAmount = 80;
             // Discounted Toll Rate...
-            if (this.vehicles && this.vehicles.length != 0) this.vehicles.forEach((vehicle) => {
-                if (vehicle.artifactType.vehicleNumber.toLowerCase() === this.model.vechicleNumber.toLowerCase() && vehicle.artifactType.tollName.toLowerCase() === model.tollName.toLowerCase()){
-                    
-                    // New Date Time...
-                    const currentdate = new Date(); 
-                    const newDateTime = currentdate.getFullYear() + "/" + (currentdate.getMonth()+1)  + "/" + currentdate.getDate() + ", "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
-                    
-                    // Previous Date Time...
-                    const prevDateTime = vehicle.date.split(",")[0].split("/").reverse().join("/") + ',' + vehicle.date.split(",")[1].split("/").reverse().join("/");
-                    console.log(prevDateTime);
-                    const diffInMilliseconds = Math.abs(new Date(prevDateTime) - new Date(newDateTime));
-
-                    // Date/Time Difference...
-                    const diffInMinutes = Math.floor((diffInMilliseconds / (1000 * 60)) % 60);
-                    console.log(diffInMinutes);
-
-                    if (diffInMinutes < 60){
-                        model.tariffAmount = '';
+            let singleJourneyRate = '';
+            let returnJourneyRate = '';
+            //  Get singleJourney & returnJourney rate...
+            if (this.tolls && this.tolls.length != 0 && this.model && this.model.tollName && this.model.tollName != '') {
+                this.tolls.forEach((toll) => {
+                    if (toll.tollName.toLowerCase() === this.model.tollName.toLowerCase()){
+                        if (this.model.vehicleType === 'carJeepVan'){
+                            singleJourneyRate = toll.carJeepVan.singleJourney;
+                            returnJourneyRate = toll.carJeepVan.returnJourney;
+                        }else if (this.model.vehicleType === 'lcv') {
+                            singleJourneyRate = toll.lcv.singleJourney;
+                            returnJourneyRate = toll.lcv.returnJourney;
+                        }else if (this.model.vehicleType === 'truckBus') {
+                            singleJourneyRate = toll.truckBus.singleJourney;
+                            returnJourneyRate = toll.truckBus.returnJourney;
+                        }else if (this.model.vehicleType === 'heavyVehicle') {
+                            singleJourneyRate = toll.heavyVehicle.singleJourney;
+                            returnJourneyRate = toll.heavyVehicle.returnJourney;
+                        }
                     }
-                   
+                });
+            }
+            if (this.vehicles && this.vehicles.length != 0 && this.model && this.model.vechicleNumber && this.model.vechicleNumber != '' && this.model.tollName && this.model.tollName != '') {
+                
+                const currentdate = new Date(); 
+                const recentDate = currentdate.getDate() + "/" + (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear();
+                console.log(recentDate);
+                const recentTime = currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
+                console.log(recentTime.trim());
 
+                // vehicle history...
+                let vehicleHistory = [];
+                this.vehicles.forEach((vehicle) => {
+                    const existingDate = vehicle.date.split(",")[0];
+                    const existingTime = vehicle.date.split(",")[1].trim();
+                    if (vehicle.vehicleNumber.toLowerCase() === this.model.vechicleNumber.toLowerCase() && vehicle.tollName.toLowerCase() === this.model.tollName.toLowerCase() && existingDate === recentDate){
+                        vehicleHistory.push({date: existingDate, time: existingTime, vehicleNumber: vehicle.vehicleNumber, tollgateName: vehicle.tollName});
+                    }   
+                });
+                console.table(vehicleHistory);
+                /* 
+                    1 round trip = single(starting) journey + return journey
+                    Ex. 4 trips is equvalent to 2 round trip.
+                */
+                const totalTrips = vehicleHistory.length;
+                if (totalTrips % 2 == 0) {
+                    this.model.tariffAmount = singleJourneyRate;
+                    this.fieldValidate();
+                } else {
+                    // Compare the time...
+                    console.log("singleJourneyRate = ");
+                    console.log(singleJourneyRate);
+                    console.log(vehicleHistory[totalTrips - 1].time);
+                    const hours = (vehicleHistory[totalTrips - 1].time.split(":")[0]) - (recentTime.split(":")[0]);
+                    const minutes = (vehicleHistory[totalTrips - 1].time.split(":")[1]) - (recentTime.split(":")[1]);
+                    if (hours == 0 && minutes < 60) {
+                        console.log(returnJourneyRate);
+                        this.model.tariffAmount = returnJourneyRate;
+                        this.fieldValidate();
+                    } else {
+                        this.model.tariffAmount = singleJourneyRate;
+                        this.fieldValidate();
+                    }
                 }
-                    
-            });
+            } else {
+                this.model.tariffAmount = singleJourneyRate;
+                this.fieldValidate();
+            }
+            
 
         }
     }

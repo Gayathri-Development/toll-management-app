@@ -2,7 +2,8 @@
     <div>
         <div>
             <label class="required">Toll Name</label>
-            <input v-model="model.tollName" class="textBox" type="text" name="tollName" placeholder="Enter toll name">
+            <input v-on:click="checkTollExist(model.tollName); fieldValidate()" v-on:focus="checkTollExist(model.tollName); fieldValidate()" @focusout="checkTollExist(); fieldValidate(model.tollName);" @change="checkTollExist(model.tollName); fieldValidate()" v-model="model.tollName" class="textBox" type="text" name="tollName" placeholder="Enter toll name">
+            <span class="error-text" v-if="isTollAlreadyExist">Toll Name already exist!</span>
         </div>
         <!-- Vechicle fare details -->
         <div class="detailsPadding">
@@ -17,10 +18,10 @@
                     </select>
                 </div>
                 <div class="textPadding column">
-                    <input type="number" min="1" v-model="model.carJeepVan.singleJourney" class="textBox" name="singleJourney" placeholder="Single Journey">
+                    <input v-on:click="fieldValidate()" v-on:focus="fieldValidate()" @focusout="fieldValidate();" @change="fieldValidate()" type="number" min="1" v-model="model.carJeepVan.singleJourney" class="textBox" name="singleJourney" placeholder="Single Journey">
                 </div>
                 <div class="textPadding column">
-                    <input v-model="model.carJeepVan.returnJourney" class="textBox" type="number" min="1" name="returnJourney" placeholder="Return Journey">
+                    <input v-on:click="fieldValidate()" v-on:focus="fieldValidate()" @focusout="fieldValidate();" @change="fieldValidate()" v-model="model.carJeepVan.returnJourney" class="textBox" type="number" min="1" name="returnJourney" placeholder="Return Journey">
                 </div>
             </div>
 
@@ -33,10 +34,10 @@
                     </select>
                 </div>
                 <div class="textPadding column">
-                    <input v-model="model.lcv.singleJourney" class="textBox" type="number" min="1" name="singleJourney" placeholder="Single Journey">
+                    <input v-on:click="fieldValidate()" v-on:focus="fieldValidate()" @focusout="fieldValidate();" @change="fieldValidate()" v-model="model.lcv.singleJourney" class="textBox" type="number" min="1" name="singleJourney" placeholder="Single Journey">
                 </div>
                 <div class="textPadding column">
-                    <input v-model="model.lcv.returnJourney" class="textBox" type="number" min="1" name="returnJourney" placeholder="Return Journey">
+                    <input v-on:click="fieldValidate()" v-on:focus="fieldValidate()" @focusout="fieldValidate();" @change="fieldValidate()" v-model="model.lcv.returnJourney" class="textBox" type="number" min="1" name="returnJourney" placeholder="Return Journey">
                 </div>
             </div>
 
@@ -49,10 +50,10 @@
                     </select>
                 </div>
                 <div class="textPadding column">
-                    <input v-model="model.truckBus.singleJourney" class="textBox" type="number" min="1" name="singleJourney" placeholder="Single Journey">
+                    <input v-on:click="fieldValidate()" v-on:focus="fieldValidate()" @focusout="fieldValidate();" @change="fieldValidate()" v-model="model.truckBus.singleJourney" class="textBox" type="number" min="1" name="singleJourney" placeholder="Single Journey">
                 </div>
                 <div class="textPadding column">
-                    <input v-model="model.truckBus.returnJourney" class="textBox" type="number" min="1" name="returnJourney" placeholder="Return Journey">
+                    <input v-on:click="fieldValidate()" v-on:focus="fieldValidate()" @focusout="fieldValidate();" @change="fieldValidate()" v-model="model.truckBus.returnJourney" class="textBox" type="number" min="1" name="returnJourney" placeholder="Return Journey">
                 </div>
             </div>
 
@@ -65,10 +66,10 @@
                     </select>
                 </div>
                 <div class="textPadding column">
-                    <input v-model="model.heavyVehicle.singleJourney" class="textBox" type="number" min="1" name="singleJourney" placeholder="Single Journey">
+                    <input v-on:click="fieldValidate()" v-on:focus="fieldValidate()" @focusout="fieldValidate();" @focus="fieldValidate()" @change="fieldValidate()" v-model="model.heavyVehicle.singleJourney" class="textBox" type="number" min="1" name="singleJourney" placeholder="Single Journey">
                 </div>
                 <div class="textPadding column">
-                    <input v-model="model.heavyVehicle.returnJourney" class="textBox" type="number" min="1" name="returnJourney" placeholder="Return Journey">
+                    <input v-on:click="fieldValidate()" v-on:focus="fieldValidate()" @focusout="fieldValidate();" @focus="fieldValidate()" @change="fieldValidate()" v-model="model.heavyVehicle.returnJourney" class="textBox" type="number" min="1" name="returnJourney" placeholder="Return Journey">
                 </div>
             </div>
             
@@ -80,6 +81,7 @@ export default {
     name: 'AddToll',
     data() {
         return {
+            isTollAlreadyExist: false,
             vehicleTypes: [
                 {
                     value: "carJeepVan",
@@ -102,6 +104,7 @@ export default {
     },
     props: ['model', 'flags', 'tolls'],
     created() {
+        this.isTollAlreadyExist = false;
         this.model.carJeepVan = {
             vehicleType: 'carJeepVan'
         };
@@ -117,6 +120,7 @@ export default {
     },
     watch: {
         'model.tollName': function(val) {
+            this.checkTollExist(val);
             this.fieldValidate();
         },
         'model.carJeepVan.singleJourney': function(val) {
@@ -145,8 +149,22 @@ export default {
         }
     },
     methods: {
+        checkTollExist(val) {
+            if (this.tolls && this.tolls.length != 0) {
+                if (this.tolls.filter(e => e.tollName.trim().toLowerCase() === val.trim().toLowerCase()).length > 0) {
+                    /* tolls contains the element we're looking for */
+                    this.isTollAlreadyExist = true;
+                    this.fieldValidate();
+                    this.$forceUpdate();
+                }else{
+                    this.isTollAlreadyExist = false;
+                    this.fieldValidate();
+                    this.$forceUpdate();
+                }
+            }
+        },
         fieldValidate() {
-            if (this.model.tollName && this.model.tollName != '' && this.model.carJeepVan && this.model.carJeepVan.singleJourney && this.model.carJeepVan.singleJourney != '' && this.model.carJeepVan.returnJourney && this.model.carJeepVan.returnJourney != '' && this.model.lcv && this.model.lcv.singleJourney && this.model.lcv.singleJourney != '' && this.model.truckBus && this.model.truckBus.singleJourney && this.model.truckBus.singleJourney != '' && this.model.truckBus.returnJourney && this.model.truckBus.returnJourney != '' && this.model.heavyVehicle && this.model.heavyVehicle.singleJourney && this.model.heavyVehicle.singleJourney != '' && this.model.heavyVehicle.returnJourney && this.model.heavyVehicle.returnJourney != ''){
+            if (this.model.tollName && this.model.tollName != '' && this.model.carJeepVan && this.model.carJeepVan.singleJourney && this.model.carJeepVan.singleJourney != '' && this.model.carJeepVan.returnJourney && this.model.carJeepVan.returnJourney != '' && this.model.lcv && this.model.lcv.singleJourney && this.model.lcv.singleJourney != '' && this.model.truckBus && this.model.truckBus.singleJourney && this.model.truckBus.singleJourney != '' && this.model.truckBus.returnJourney && this.model.truckBus.returnJourney != '' && this.model.heavyVehicle && this.model.heavyVehicle.singleJourney && this.model.heavyVehicle.singleJourney != '' && !this.isTollAlreadyExist){
                 this.flags.invalid = false;
             } else {
                 this.flags.invalid = true;
@@ -167,4 +185,12 @@ export default {
     padding-top: 20px;
 }
 
+.error-text {
+  color: #cc0033;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  font-weight: bold;
+  line-height: 20px;
+  text-shadow: 1px 1px rgba(250,250,250,.3);
+}
 </style>

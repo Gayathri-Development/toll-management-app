@@ -15,18 +15,24 @@
                 <slot name="tb-row" :row="item" :rowIndex="itemIndex" :column="column"></slot> 
             </td>
         </tr>
-        <span v-if="rows.length == 0">
-          {{"No Records Found"}}
-        </span>
       </tbody>
     </table>
+
+    <span class="alert" v-if="rows.length == 0">
+      <Alert alertType="info" :isDismissable='false' :message="'No ' + resourceType + ' Found!'"></Alert>
+    </span>
+
   </div>
 </template>
 
 <script>
+import Alert from "@/components/Alerts/alert.vue";
 export default {
   name: 'TableComponent',
-  props: ['rows', 'columns'],
+  components: {
+    Alert
+  },
+  props: ['rows', 'columns', 'resourceType'],
 }
 </script>
 
@@ -66,5 +72,9 @@ th {
   /* font-weight: normal; */
   font-family: Arial, Helvetica, sans-serif;
   font-size: 80%;
+}
+.alert {
+  padding: 2px 2px 2px 2px;
+  width: 97%;
 }
 </style>

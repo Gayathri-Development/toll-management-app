@@ -8,7 +8,6 @@
 <script>
 import HomePage from '@/views/HomePage.vue'
 import Header from '@/views/HeaderTollgate.vue'
-
 export default {
   name: 'App',
   components: {
@@ -23,16 +22,6 @@ export default {
   margin: 0;
   padding: 0;
 }
-/**
-button {
-  padding: 20px 30px;
-  border: none;
-  font-size: 16px;
-  background-color: crimson;
-  color: #fff;
-  cursor: pointer;
-}
-**/
 
 /* Add Flexbox css */ 
 .flex-container {
