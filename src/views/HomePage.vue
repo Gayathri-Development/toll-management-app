@@ -375,19 +375,25 @@ methods: {
   createToll(model){
     console.log("createToll fn");
     console.log(model);
+    
     // Add new Toll...
+    // Capitalize the Toll Name first letter
+    const tollName = model.tollName.toLowerCase();
+    model.tollName = tollName[0].toUpperCase() + tollName.slice(1, tollName.length);
+
     this.tolls.push(model);
     const tolls = JSON.stringify(this.tolls);
     localStorage.setItem('tolls', tolls);
     this.tollsFiltered = JSON.parse(localStorage.getItem('tolls'));
     // Add new Toll ends...
+    
     this.isVehicleLogs = false;
     this.modalToll = {}
     this.modalTollCleanUp();
   },
   modalTollCleanUp() {
-    console.log("Inside cleanup");
-    console.log(this.modalToll);
+    this.model = {};
+    this.modalToll.tollName = "";
     this.modalToll.carJeepVan = {
       vehicleType: 'carJeepVan'
     };
@@ -401,6 +407,7 @@ methods: {
       vehicleType: 'heavyVehicle'
     };
     this.model = this.modalToll;
+    this.$forceUpdate();
   },
   createVehicle(model){
     console.log("createVehicle fn");
@@ -430,8 +437,10 @@ methods: {
     this.isVehicleLogs = true;
     this.modelVehicle = {};
     this.modelVehicleCleanUp();
+    this.modalTollCleanUp();
   },
   modelVehicleCleanUp() {
+    this.model = {};
     this.modelVehicle.tollName = null;
     this.modelVehicle.vehicleType = null;
     this.model = this.modelVehicle;

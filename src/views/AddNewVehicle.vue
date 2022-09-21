@@ -10,7 +10,7 @@
 
         <div class="paddingTop">
             <label class="required">Select Vechicle Type</label>
-            <select @change="tariffCalculation()" v-model="model.vehicleType" class="textBox">
+            <select v-on:focus="tariffCalculation(); fieldValidate()" @change="tariffCalculation()" v-on:click="tariffCalculation(); fieldValidate()" v-model="model.vehicleType" class="textBox">
                 <option :value='null'>Select vehicle type</option>
                 <option v-for="(vehicle, index) in vehicleTypes" :value="vehicle.value">{{vehicle.text}}</option>
             </select>
@@ -82,6 +82,8 @@ export default {
         },
         tariffCalculation() {
             console.log("Tariff Calculation");
+            console.log(this.model.tollName);
+            console.log(this.model.vechicleNumber);
             // Discounted Toll Rate...
             let singleJourneyRate = '';
             let returnJourneyRate = '';
@@ -128,27 +130,37 @@ export default {
                     Ex. 4 trips is equvalent to 2 round trip.
                 */
                 const totalTrips = vehicleHistory.length;
-                if (totalTrips % 2 == 0) {
+                if (totalTrips == 0){
+                    console.log("Vehicle not exist -> " + singleJourneyRate);
                     this.model.tariffAmount = singleJourneyRate;
+                    this.$forceUpdate();
+                    this.fieldValidate();
+                }else if (totalTrips % 2 == 0) {
+                    console.log("Round tripe completed - Reset tripe -> " + singleJourneyRate);
+                    this.model.tariffAmount = singleJourneyRate;
+                    this.$forceUpdate();
                     this.fieldValidate();
                 } else {
                     // Compare the time...
-                    console.log("singleJourneyRate = ");
-                    console.log(singleJourneyRate);
                     console.log(vehicleHistory[totalTrips - 1].time);
                     const hours = (vehicleHistory[totalTrips - 1].time.split(":")[0]) - (recentTime.split(":")[0]);
                     const minutes = (vehicleHistory[totalTrips - 1].time.split(":")[1]) - (recentTime.split(":")[1]);
                     if (hours == 0 && minutes < 60) {
-                        console.log(returnJourneyRate);
+                        console.log("Within 1 hrs -> " + returnJourneyRate);
                         this.model.tariffAmount = returnJourneyRate;
+                        this.$forceUpdate();
                         this.fieldValidate();
                     } else {
+                        console.log("Within 1 hrs else -> " + singleJourneyRate);
                         this.model.tariffAmount = singleJourneyRate;
+                        this.$forceUpdate();
                         this.fieldValidate();
                     }
                 }
             } else {
+                console.log("No vehicle ele -> " + singleJourneyRate);
                 this.model.tariffAmount = singleJourneyRate;
+                this.$forceUpdate();
                 this.fieldValidate();
             }
             
