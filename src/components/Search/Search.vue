@@ -143,7 +143,7 @@ created() {
 },
 methods: {
   viewTolls() {
-    this.$router.push({ path: 'Vehicles' });
+    this.$router.push({ path: '/' });
     this.isVehicleLogs = !this.isVehicleLogs;
   },
   viewVehicles() {
@@ -158,7 +158,6 @@ methods: {
     this.vehicleModalActive = status;
   },
   vehicleModel() {
-    // this.model = this.modelVehicle;
     this.vehicleModalActive = true;
   },
   tollModalStatus(status) {
@@ -192,7 +191,7 @@ methods: {
 
     if (this.isVehicleLogs) {
       this.$router.push({ path: 'Tollgates' });
-      this.isVehicleLogs = false;
+      this.isVehicleLogs = !this.isVehicleLogs;
     }
     this.entry = {}
     this.modalTollCleanUp();
@@ -244,7 +243,11 @@ methods: {
     this.$store.state.vehiclesFiltered = JSON.parse(localStorage.getItem('vehicles'));
     // Add new vehicle ends...
 
-    this.isVehicleLogs = true;
+    if (!this.isVehicleLogs) {
+      this.$router.push({ path: '/' });
+      this.isVehicleLogs = !this.isVehicleLogs;
+    }
+
     this.modelVehicle = {};
     this.modelVehicleCleanUp();
     // this.modalTollCleanUp();

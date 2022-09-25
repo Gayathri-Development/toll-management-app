@@ -10,7 +10,7 @@ Vue.use(Router)
 export default new Router({
     routes: [
       { 
-        path: `/Vehicles`,
+        path: `/`,
         name: `Vehicles`,
         component: HomeVehicle 
       },
