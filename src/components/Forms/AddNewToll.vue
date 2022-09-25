@@ -2,7 +2,7 @@
     <div>
         <div>
             <label class="required">Toll Name</label>
-            <input v-on:click="checkTollExist(model.tollName); fieldValidate()" v-on:focus="checkTollExist(model.tollName); fieldValidate()" @focusout="checkTollExist(); fieldValidate(model.tollName);" @change="checkTollExist(model.tollName); fieldValidate()" v-model="model.tollName" class="textBox" type="text" name="tollName" placeholder="Enter toll name">
+            <input v-model="model.tollName" class="textBox" type="text" name="tollName" placeholder="Enter toll name">
             <span class="error-text" v-if="isTollAlreadyExist">Toll Name already exist!</span>
         </div>
         <!-- Vechicle fare details -->
@@ -18,10 +18,10 @@
                     </select>
                 </div>
                 <div class="textPadding column">
-                    <input v-on:click="fieldValidate()" v-on:focus="fieldValidate()" @focusout="fieldValidate();" @change="fieldValidate()" type="number" min="1" v-model="model.carJeepVan.singleJourney" class="textBox" name="singleJourney" placeholder="Single Journey">
+                    <input type="number" min="1" v-model="model.carJeepVan.singleJourney" class="textBox" name="singleJourney" placeholder="Single Journey">
                 </div>
                 <div class="textPadding column">
-                    <input v-on:click="fieldValidate()" v-on:focus="fieldValidate()" @focusout="fieldValidate();" @change="fieldValidate()" v-model="model.carJeepVan.returnJourney" class="textBox" type="number" min="1" name="returnJourney" placeholder="Return Journey">
+                    <input v-model="model.carJeepVan.returnJourney" class="textBox" type="number" min="1" name="returnJourney" placeholder="Return Journey">
                 </div>
             </div>
 
@@ -34,10 +34,10 @@
                     </select>
                 </div>
                 <div class="textPadding column">
-                    <input v-on:click="fieldValidate()" v-on:focus="fieldValidate()" @focusout="fieldValidate();" @change="fieldValidate()" v-model="model.lcv.singleJourney" class="textBox" type="number" min="1" name="singleJourney" placeholder="Single Journey">
+                    <input v-model="model.lcv.singleJourney" class="textBox" type="number" min="1" name="singleJourney" placeholder="Single Journey">
                 </div>
                 <div class="textPadding column">
-                    <input v-on:click="fieldValidate()" v-on:focus="fieldValidate()" @focusout="fieldValidate();" @change="fieldValidate()" v-model="model.lcv.returnJourney" class="textBox" type="number" min="1" name="returnJourney" placeholder="Return Journey">
+                    <input v-model="model.lcv.returnJourney" class="textBox" type="number" min="1" name="returnJourney" placeholder="Return Journey">
                 </div>
             </div>
 
@@ -50,10 +50,10 @@
                     </select>
                 </div>
                 <div class="textPadding column">
-                    <input v-on:click="fieldValidate()" v-on:focus="fieldValidate()" @focusout="fieldValidate();" @change="fieldValidate()" v-model="model.truckBus.singleJourney" class="textBox" type="number" min="1" name="singleJourney" placeholder="Single Journey">
+                    <input v-model="model.truckBus.singleJourney" class="textBox" type="number" min="1" name="singleJourney" placeholder="Single Journey">
                 </div>
                 <div class="textPadding column">
-                    <input v-on:click="fieldValidate()" v-on:focus="fieldValidate()" @focusout="fieldValidate();" @change="fieldValidate()" v-model="model.truckBus.returnJourney" class="textBox" type="number" min="1" name="returnJourney" placeholder="Return Journey">
+                    <input v-model="model.truckBus.returnJourney" class="textBox" type="number" min="1" name="returnJourney" placeholder="Return Journey">
                 </div>
             </div>
 
@@ -66,10 +66,10 @@
                     </select>
                 </div>
                 <div class="textPadding column">
-                    <input v-on:click="fieldValidate()" v-on:focus="fieldValidate()" @focusout="fieldValidate();" @focus="fieldValidate()" @change="fieldValidate()" v-model="model.heavyVehicle.singleJourney" class="textBox" type="number" min="1" name="singleJourney" placeholder="Single Journey">
+                    <input v-model="model.heavyVehicle.singleJourney" class="textBox" type="number" min="1" name="singleJourney" placeholder="Single Journey">
                 </div>
                 <div class="textPadding column">
-                    <input v-on:click="fieldValidate()" v-on:focus="fieldValidate()" @focusout="fieldValidate();" @focus="fieldValidate()" @change="fieldValidate()" v-model="model.heavyVehicle.returnJourney" class="textBox" type="number" min="1" name="returnJourney" placeholder="Return Journey">
+                    <input v-model="model.heavyVehicle.returnJourney" class="textBox" type="number" min="1" name="returnJourney" placeholder="Return Journey">
                 </div>
             </div>
             
@@ -120,37 +120,46 @@ export default {
     },
     watch: {
         'model.tollName': function(val) {
+            console.log(val);
             this.checkTollExist(val);
             this.fieldValidate();
         },
         'model.carJeepVan.singleJourney': function(val) {
+            console.log(val);
             this.fieldValidate();
         },
         'model.carJeepVan.returnJourney': function(val) {
+            console.log(val);
             this.fieldValidate();
         },
         'model.lcv.singleJourney': function(val) {
+            console.log(val);
             this.fieldValidate();
         },
         'model.lcv.returnJourney': function(val) {
+            console.log(val);
             this.fieldValidate();
         },
         'model.truckBus.singleJourney': function(val) {
+            console.log(val);
             this.fieldValidate();
         },
         'model.truckBus.returnJourney': function(val) {
+            console.log(val);
             this.fieldValidate();
         },
         'model.heavyVehicle.singleJourney': function(val) {
+            console.log(val);
             this.fieldValidate();
         },
         'model.heavyVehicle.returnJourney': function(val) {
+            console.log(val);
             this.fieldValidate();
         }
     },
     methods: {
         checkTollExist(val) {
-            if (this.tolls && this.tolls.length != 0) {
+            if (val && val != '' && this.tolls && this.tolls.length != 0) {
                 if (this.tolls.filter(e => e.tollName.trim().toLowerCase() === val.trim().toLowerCase()).length > 0) {
                     /* tolls contains the element we're looking for */
                     this.isTollAlreadyExist = true;
@@ -164,7 +173,7 @@ export default {
             }
         },
         fieldValidate() {
-            if (this.model.tollName && this.model.tollName != '' && this.model.carJeepVan && this.model.carJeepVan.singleJourney && this.model.carJeepVan.singleJourney != '' && this.model.carJeepVan.returnJourney && this.model.carJeepVan.returnJourney != '' && this.model.lcv && this.model.lcv.singleJourney && this.model.lcv.singleJourney != '' && this.model.truckBus && this.model.truckBus.singleJourney && this.model.truckBus.singleJourney != '' && this.model.truckBus.returnJourney && this.model.truckBus.returnJourney != '' && this.model.heavyVehicle && this.model.heavyVehicle.singleJourney && this.model.heavyVehicle.singleJourney != '' && !this.isTollAlreadyExist){
+            if (this.model.tollName && this.model.tollName != '' && this.model.carJeepVan && this.model.carJeepVan.singleJourney && this.model.carJeepVan.singleJourney != '' && this.model.carJeepVan.returnJourney && this.model.carJeepVan.returnJourney != '' && this.model.lcv && this.model.lcv.singleJourney && this.model.lcv.singleJourney != '' && this.model.truckBus && this.model.truckBus.singleJourney && this.model.truckBus.singleJourney != '' && this.model.truckBus.returnJourney && this.model.truckBus.returnJourney != '' && this.model.heavyVehicle && this.model.heavyVehicle.singleJourney && this.model.heavyVehicle.singleJourney != '' && this.model.heavyVehicle.returnJourney && this.model.heavyVehicle.returnJourney != '' && !this.isTollAlreadyExist){
                 this.flags.invalid = false;
             } else {
                 this.flags.invalid = true;

@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import Alert from "@/components/Alerts/alert.vue";
+import Alert from "@/components/Alerts/Alert.vue";
 export default {
   name: 'TableComponent',
   components: {

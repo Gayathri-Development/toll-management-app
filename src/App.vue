@@ -1,18 +1,19 @@
 <template>
   <div>
     <Header/>
-    <HomePage/>
+    <Search></Search>
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
-import HomePage from '@/views/HomePage.vue'
-import Header from '@/views/HeaderTollgate.vue'
+import Header from '@/components/Header/HeaderTollgate.vue';
+import Search from '@/components/Search/Search.vue';
 export default {
   name: 'App',
   components: {
     Header,
-    HomePage
+    Search
   }
 }
 </script>

@@ -2,7 +2,7 @@
     <div>
         <div>
             <label class="required">Select Toll Name</label>
-            <select v-model="model.tollName" class="textBox">
+            <select v-model="model.tollName" @change="tariffCalculation()" class="textBox">
                 <option :value='null'>Select Toll Name</option>
                 <option v-for="(toll, index) in tolls" :value="toll.tollName">{{toll.tollName}}</option>
             </select>
@@ -10,7 +10,7 @@
 
         <div class="paddingTop">
             <label class="required">Select Vechicle Type</label>
-            <select v-on:focus="tariffCalculation(); fieldValidate()" @change="tariffCalculation()" v-on:click="tariffCalculation(); fieldValidate()" v-model="model.vehicleType" class="textBox">
+            <select v-model="model.vehicleType" @change="tariffCalculation()" class="textBox">
                 <option :value='null'>Select vehicle type</option>
                 <option v-for="(vehicle, index) in vehicleTypes" :value="vehicle.value">{{vehicle.text}}</option>
             </select>
@@ -18,13 +18,12 @@
 
         <div class="paddingTop">
             <label class="required">Vechicle Number</label>
-            <!-- v-on:change='setVechicleNum(model.vechicleNumber); fieldValidate(); tariffCalculation()' -->
-            <input @change="fieldValidate()" v-on:click="fieldValidate()" v-on:focus="tariffCalculation(); fieldValidate()" @focusout="fieldValidate(); tariffCalculation()" v-model="model.vechicleNumber" class="textBox" type="text" name="vechicleNumber" placeholder="Enter Vechicle Number">
+            <input v-model="model.vechicleNumber" @change="tariffCalculation()" class="textBox" type="text" name="vechicleNumber" placeholder="Enter Vechicle Number">
         </div>
 
         <div class="paddingTop">
             <label class="required">Tariff</label>
-            <input v-on:change="fieldValidate()" v-model="model.tariffAmount" disabled class="textBox disabledAccess" type="text" name="tariffAmount" placeholder="Tariff Amount">
+            <input v-model="model.tariffAmount" disabled class="textBox disabledAccess" type="text" name="tariffAmount" placeholder="Tariff Amount">
         </div>
 
     </div>
@@ -61,13 +60,17 @@ export default {
     },
     watch: {
         'model.tollName': function(val) {
+            console.log(val);
+            this.tariffCalculation();
             this.fieldValidate();
         },
         'model.vehicleType': function(val) {
+            console.log(val);
             this.tariffCalculation();
             this.fieldValidate();
         },
         'model.vechicleNumber': function(val) {
+            console.log(val);
             this.tariffCalculation();
             this.fieldValidate();
         }
