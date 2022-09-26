@@ -1,7 +1,7 @@
 <template>
   <div class="container">
+    <Search :isVehicleLogs="false"></Search>
     <div class="flex-container">
-      
       <div class="card">  
         <!-- Tolls log -->
         <TableComponent :rows="tollsFiltered" :columns="tollsColumn" resourceType="Tolls">
@@ -41,14 +41,16 @@
 
 <script>
 import Modal from "@/components/Model/Modal.vue";
-import TableComponent from '@/components/Table/TableComponent.vue'
+import TableComponent from '@/components/Table/TableComponent.vue';
 import DeleteTollForm from "@/components/Forms/DeleteToll.vue";
+import Search from '@/components/Search/Search.vue';
 export default {
   name: 'HomePage',
   components: {
     TableComponent,
     Modal,
-    DeleteTollForm
+    DeleteTollForm,
+    Search
   },
   computed: {
     tollsFiltered() {

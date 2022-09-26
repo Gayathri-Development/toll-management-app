@@ -1,19 +1,16 @@
 <template>
   <div>
     <Header/>
-    <Search></Search>
     <router-view></router-view>
   </div>
 </template>
 
 <script>
 import Header from '@/components/Header/HeaderTollgate.vue';
-import Search from '@/components/Search/Search.vue';
 export default {
   name: 'App',
   components: {
-    Header,
-    Search
+    Header
   }
 }
 </script>

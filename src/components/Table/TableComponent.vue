@@ -17,11 +17,9 @@
         </tr>
       </tbody>
     </table>
-
-    <span class="alert" v-if="rows.length == 0">
+    <span class="alert" v-if="!rows || (rows && rows.length == 0)">
       <Alert alertType="info" :isDismissable='false' :message="'No ' + resourceType + ' Found!'"></Alert>
     </span>
-
   </div>
 </template>
 

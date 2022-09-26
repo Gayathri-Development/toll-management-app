@@ -82,7 +82,6 @@ export default {
   },
   data () {
     return {
-      isVehicleLogs: true,
       vehicleModalActive: false,
       tollModalActive: false,
       tollName: "",
@@ -113,6 +112,7 @@ export default {
       },
     }
   },
+  props: ['isVehicleLogs'],
   watch: {
   tollNameSearch: function(val) {
     console.log(val);
@@ -129,29 +129,17 @@ export default {
   }
 },
 created() {
-  // this.$store.state.vehiclesFiltered = this.vehicles;
-  const vehicles = JSON.stringify(this.vehicles);
-  localStorage.setItem('vehicles', vehicles);
-  this.$store.state.vehiclesFiltered = JSON.parse(localStorage.getItem('vehicles'));
-
-  // Toll Local Storage...
-  const tolls = JSON.stringify(this.tolls);
-  localStorage.setItem('tolls', tolls);
-  this.$store.state.tollsFiltered = JSON.parse(localStorage.getItem('tolls'));
-  console.log("TOLLS FILTERED")
-  console.table(this.$store.state.tollsFiltered);
+  const tolls = JSON.parse(localStorage.getItem('tolls'));
+  this.$store.state.tollsFiltered = tolls;
+  const vehicles = JSON.parse(localStorage.getItem('vehicles'));
+  this.$store.state.vehiclesFiltered = vehicles;
 },
 methods: {
   viewTolls() {
     this.$router.push({ path: '/' });
-    this.isVehicleLogs = !this.isVehicleLogs;
   },
   viewVehicles() {
     this.$router.push({ path: 'Tollgates' });
-    this.isVehicleLogs = !this.isVehicleLogs;
-  },
-  logsToggle() {
-    this.isVehicleLogs = !this.isVehicleLogs;
   },
   vehicleModalStatus(status) {
     console.log(status);
@@ -191,7 +179,6 @@ methods: {
 
     if (this.isVehicleLogs) {
       this.$router.push({ path: 'Tollgates' });
-      this.isVehicleLogs = !this.isVehicleLogs;
     }
     this.entry = {}
     this.modalTollCleanUp();
@@ -245,12 +232,10 @@ methods: {
 
     if (!this.isVehicleLogs) {
       this.$router.push({ path: '/' });
-      this.isVehicleLogs = !this.isVehicleLogs;
     }
 
     this.modelVehicle = {};
     this.modelVehicleCleanUp();
-    // this.modalTollCleanUp();
   },
   modelVehicleCleanUp() {
     this.modelVehicle = {};

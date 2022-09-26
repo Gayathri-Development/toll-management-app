@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+    <Search :isVehicleLogs="true"></Search>
     <div class="flex-container">
       <div class="card">
           <!-- Vehicles log -->
@@ -28,11 +29,13 @@
 </template>
 
 <script>
-import TableComponent from '@/components/Table/TableComponent.vue'
+import TableComponent from '@/components/Table/TableComponent.vue';
+import Search from '@/components/Search/Search.vue';
 export default {
   name: 'HomePage',
   components: {
-    TableComponent
+    TableComponent,
+    Search
   },
   computed: {
     vehiclesFiltered() {
