@@ -33,23 +33,21 @@ strong.alertTitle {
 strong.alertTitle:first-letter {
     text-transform: uppercase;
 }
-.alert.danger {
+.alert {
     color: white;
+    font-size: 18px;
+}
+.alert.danger {
     padding: 13px;
     background-color: #E34234;
-    font-size: 18px;
 }
 .alert.info {
-    color: white;
     padding: 13px;
     background-color: #0096FF;
-    font-size: 18px;
 }
 .alert.success {
-    color: white;
     padding: 13px;
     background-color: green;
-    font-size: 18px;
 }
 i {
   margin-left: 15px;
