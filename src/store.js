@@ -15,7 +15,7 @@ export const store = new Vuex.Store({
             state.tolls = tolls;
         },
         setVehicles (vehicles) {
-            state.tolls = vehicles;
+            state.vehicles = vehicles;
         },
     },
 });

@@ -116,23 +116,23 @@ export default {
   watch: {
   tollNameSearch: function(val) {
     console.log(val);
-    const tolls = JSON.parse(localStorage.getItem('tolls'));
+    // const tolls = JSON.parse(localStorage.getItem('tolls'));
     if (val != null && val != "") {
-      this.$store.state.tollsFiltered = tolls.filter(toll => (toll.tollName.toLowerCase().includes(val.toLowerCase())));
-    } else this.$store.state.tollsFiltered = tolls;
+      this.$store.state.tollsFiltered = this.tolls.filter(toll => (toll.tollName.toLowerCase().includes(val.toLowerCase())));
+    } else this.$store.state.tollsFiltered = this.tolls;
   },
   vehicleNumberSearch: function(val) {
-    const vehicles = JSON.parse(localStorage.getItem('vehicles'));
+    // const vehicles = JSON.parse(localStorage.getItem('vehicles'));
     if (val != null && val != "") {
-      this.$store.state.vehiclesFiltered = vehicles.filter(vehicle => (vehicle.vehicleNumber.toLowerCase().includes(val.toLowerCase())));
-    } else this.$store.state.vehiclesFiltered = vehicles;
+      this.$store.state.vehiclesFiltered = this.vehicles.filter(vehicle => (vehicle.vehicleNumber.toLowerCase().includes(val.toLowerCase())));
+    } else this.$store.state.vehiclesFiltered = this.vehicles;
   }
 },
 created() {
-  const tolls = JSON.parse(localStorage.getItem('tolls'));
-  this.$store.state.tollsFiltered = tolls;
-  const vehicles = JSON.parse(localStorage.getItem('vehicles'));
-  this.$store.state.vehiclesFiltered = vehicles;
+  // const tolls = JSON.parse(localStorage.getItem('tolls'));
+  this.$store.state.tollsFiltered = this.tolls;
+  // const vehicles = JSON.parse(localStorage.getItem('vehicles'));
+  this.$store.state.vehiclesFiltered = this.vehicles;
 },
 methods: {
   viewTolls() {
@@ -247,13 +247,13 @@ methods: {
   },
   tollNameFilter(tollName) {
     // console.log(tollName);
-    const vehicles = JSON.parse(localStorage.getItem('vehicles'));
+    // const vehicles = JSON.parse(localStorage.getItem('vehicles'));
     if (tollName != null && tollName != "" && tollName != undefined) {
-      this.$store.state.vehiclesFiltered = vehicles.filter(vehicle => (vehicle.tollName.toLowerCase().includes(tollName.toLowerCase())));
+      this.$store.state.vehiclesFiltered = this.vehicles.filter(vehicle => (vehicle.tollName.toLowerCase().includes(tollName.toLowerCase())));
       this.isFilterEnabled = true;
       this.$forceUpdate();
     } else {
-      this.$store.state.vehiclesFiltered = vehicles;
+      this.$store.state.vehiclesFiltered = this.vehicles;
       this.isFilterEnabled = false;
       this.$forceUpdate();
     }
